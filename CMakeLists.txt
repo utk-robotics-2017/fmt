@@ -1,7 +1,7 @@
-message(STATUS "CMake version: ${CMAKE_VERSION}")
+# message(STATUS "CMake version: ${CMAKE_VERSION}")
 
 cmake_minimum_required(VERSION 2.8.12)
-
+message("Building fmt")
 if (POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD)
 endif ()
@@ -52,9 +52,9 @@ math(EXPR CPACK_PACKAGE_VERSION_MINOR ${CMAKE_MATCH_2})
 math(EXPR CPACK_PACKAGE_VERSION_PATCH ${CMAKE_MATCH_3})
 join(FMT_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.
                  ${CPACK_PACKAGE_VERSION_PATCH})
-message(STATUS "Version: ${FMT_VERSION}")
+# message(STATUS "Version: ${FMT_VERSION}")
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+# message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
