@@ -4011,6 +4011,13 @@ operator"" _a(const wchar_t *s, std::size_t) { return {s}; }
 } // namespace fmt
 #endif // FMT_USE_USER_DEFINED_LITERALS
 
+#ifdef FMT_HEADER_ONLY
+# define FMT_FUNC inline
+# include "format.cc"
+#else
+# define FMT_FUNC
+#endif
+
 // Restore warnings.
 #if FMT_GCC_VERSION >= 406
 # pragma GCC diagnostic pop
@@ -4018,13 +4025,6 @@ operator"" _a(const wchar_t *s, std::size_t) { return {s}; }
 
 #if defined(__clang__) && !defined(FMT_ICC_VERSION)
 # pragma clang diagnostic pop
-#endif
-
-#ifdef FMT_HEADER_ONLY
-# define FMT_FUNC inline
-# include "format.cc"
-#else
-# define FMT_FUNC
 #endif
 
 #endif  // FMT_FORMAT_H_
