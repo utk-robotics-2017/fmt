@@ -1,35 +1,15 @@
-/*
- Tests of the C++ interface to POSIX functions that require mocks
-
- Copyright (c) 2012-2015, Victor Zverovich
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
-
- 1. Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Tests of the C++ interface to POSIX functions that require mocks
+//
+// Copyright (c) 2012 - present, Victor Zverovich
+// All rights reserved.
+//
+// For the license information refer to format.h.
 
 // Disable bogus MSVC warnings.
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "posix-mock.h"
-#include "fmt/posix.cc"
+#include "../src/posix.cc"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -213,15 +193,9 @@ int (test::fileno)(FILE *stream) {
 # define EXPECT_EQ_POSIX(expected, actual)
 #endif
 
-void write_file(fmt::CStringRef filename, fmt::StringRef content) {
+void write_file(fmt::cstring_view filename, fmt::string_view content) {
   fmt::BufferedFile f(filename, "w");
   f.print("{}", content);
-}
-
-TEST(UtilTest, StaticAssert) {
-  FMT_STATIC_ASSERT(true, "success");
-  // Static assertion failure is tested in compile-test because it causes
-  // a compile-time error.
 }
 
 TEST(UtilTest, GetPageSize) {
@@ -277,13 +251,13 @@ TEST(FileTest, Size) {
   write_file("test", content);
   File f("test", File::RDONLY);
   EXPECT_GE(f.size(), 0);
-  EXPECT_EQ(content.size(), static_cast<fmt::ULongLong>(f.size()));
+  EXPECT_EQ(content.size(), static_cast<unsigned long long>(f.size()));
 #ifdef _WIN32
-  fmt::MemoryWriter message;
+  fmt::memory_buffer message;
   fmt::internal::format_windows_error(
       message, ERROR_ACCESS_DENIED, "cannot get file size");
   fstat_sim = ERROR;
-  EXPECT_THROW_MSG(f.size(), fmt::WindowsError, message.str());
+  EXPECT_THROW_MSG(f.size(), fmt::windows_error, fmt::to_string(message));
   fstat_sim = NONE;
 #else
   f.close();
@@ -340,7 +314,7 @@ TEST(FileTest, ConvertReadCount) {
     ++size;
   read_count = 1;
   read_nbyte = 0;
-  EXPECT_THROW(read_end.read(&c, size), fmt::SystemError);
+  EXPECT_THROW(read_end.read(&c, size), fmt::system_error);
   read_count = 0;
   EXPECT_EQ(UINT_MAX, read_nbyte);
 }
@@ -354,7 +328,7 @@ TEST(FileTest, ConvertWriteCount) {
     ++size;
   write_count = 1;
   write_nbyte = 0;
-  EXPECT_THROW(write_end.write(&c, size), fmt::SystemError);
+  EXPECT_THROW(write_end.write(&c, size), fmt::system_error);
   write_count = 0;
   EXPECT_EQ(UINT_MAX, write_nbyte);
 }
@@ -415,7 +389,7 @@ TEST(BufferedFileTest, OpenRetry) {
 #ifndef _WIN32
   char c = 0;
   if (fread(&c, 1, 1, f->get()) < 1)
-    throw fmt::SystemError(errno, "fread failed");
+    throw fmt::system_error(errno, "fread failed");
 #endif
 }
 

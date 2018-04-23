@@ -4,8 +4,9 @@
 Format String Syntax
 ********************
 
-Formatting functions such as :ref:`fmt::format() <format>` and :ref:`fmt::print() <print>`
-use the same format string syntax described in this section.
+Formatting functions such as :ref:`fmt::format() <format>` and
+:ref:`fmt::print() <print>` use the same format string syntax described in this
+section.
 
 Format strings contain "replacement fields" surrounded by curly braces ``{}``.
 Anything that is not contained in braces is considered literal text, which is
@@ -35,6 +36,8 @@ If the numerical arg_ids in a format string are 0, 1, 2, ... in sequence,
 they can all be omitted (not just some) and the numbers 0, 1, 2, ... will be
 automatically inserted in that order.
 
+Named arguments can be referred to by their names or indices.
+
 Some simple format string examples::
 
    "First, thou shalt count to {0}" // References the first argument
@@ -51,8 +54,8 @@ described in the next section.
 
 A *format_spec* field can also include nested replacement fields in certain
 positions within it. These nested replacement fields can contain only an
-argument id; format specifications are not allowed. This allows the
-formatting of a value to be dynamically specified.
+argument id; format specifications are not allowed. This allows the formatting
+of a value to be dynamically specified.
 
 See the :ref:`formatexamples` section for some examples.
 
@@ -335,6 +338,16 @@ Aligning the text and specifying a width::
    format("{:*^30}", "centered");  // use '*' as a fill char
    // Result: "***********centered***********"
 
+Dynamic width::
+
+   format("{:<{}}", "left aligned", 30);
+   // Result: "left aligned                  "
+
+Dynamic precision::
+
+   format("{:.{}f}", 3.14, 1);
+   // Result: "3.1"
+
 Replacing ``%+f``, ``%-f``, and ``% f`` and specifying a sign::
 
    format("{:+f}; {:+f}", 3.14, -3.14);  // show it always
@@ -352,19 +365,17 @@ Replacing ``%x`` and ``%o`` and converting the value to different bases::
    format("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", 42);
    // Result: "int: 42;  hex: 0x2a;  oct: 052;  bin: 0b101010"
 
+Padded hex byte with prefix and always prints both hex characters::
+
+   format("{:#04x}", 0);
+   // Result: "0x00"
+
 .. ifconfig:: False
 
    Using the comma as a thousands separator::
 
       format("{:,}", 1234567890);
       '1,234,567,890'
-
-   Expressing a percentage::
-
-      >>> points = 19
-      >>> total = 22
-      Format("Correct answers: {:.2%}") << points/total)
-      'Correct answers: 86.36%'
 
    Using type-specific formatting::
 

@@ -1,29 +1,9 @@
-/*
- Tests of custom Google Test assertions.
-
- Copyright (c) 2012-2014, Victor Zverovich
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
-
- 1. Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Formatting library for C++ - tests of custom Google Test assertions
+//
+// Copyright (c) 2012 - present, Victor Zverovich
+// All rights reserved.
+//
+// For the license information refer to format.h.
 
 #include "gtest-extra.h"
 
@@ -78,7 +58,7 @@ void throw_exception() {
 }
 
 void throw_system_error() {
-  throw fmt::SystemError(EDOM, "test");
+  throw fmt::system_error(EDOM, "test");
 }
 
 // Tests that when EXPECT_THROW_MSG fails, it evaluates its message argument
@@ -207,11 +187,11 @@ TEST(ExpectThrowTest, DoesNotGenerateUnreachableCodeWarning) {
 // EXPECT_SYSTEM_ERROR macro.
 TEST(ExpectSystemErrorTest, DoesNotGenerateUnreachableCodeWarning) {
   int n = 0;
-  EXPECT_SYSTEM_ERROR(throw fmt::SystemError(EDOM, "test"), EDOM, "test");
+  EXPECT_SYSTEM_ERROR(throw fmt::system_error(EDOM, "test"), EDOM, "test");
   EXPECT_NONFATAL_FAILURE(EXPECT_SYSTEM_ERROR(n++, EDOM, ""), "");
   EXPECT_NONFATAL_FAILURE(EXPECT_SYSTEM_ERROR(throw 1, EDOM, ""), "");
   EXPECT_NONFATAL_FAILURE(EXPECT_SYSTEM_ERROR(
-      throw fmt::SystemError(EDOM, "aaa"), EDOM, "bbb"), "");
+      throw fmt::system_error(EDOM, "aaa"), EDOM, "bbb"), "");
 }
 
 TEST(AssertionSyntaxTest, ExceptionAssertionBehavesLikeSingleStatement) {
@@ -268,10 +248,10 @@ TEST(ExpectTest, EXPECT_SYSTEM_ERROR) {
   EXPECT_NONFATAL_FAILURE(
       EXPECT_SYSTEM_ERROR(throw_exception(), EDOM, "test"),
       "Expected: throw_exception() throws an exception of "
-      "type fmt::SystemError.\n  Actual: it throws a different type.");
+      "type fmt::system_error.\n  Actual: it throws a different type.");
   EXPECT_NONFATAL_FAILURE(
       EXPECT_SYSTEM_ERROR(do_nothing(), EDOM, "test"),
-      "Expected: do_nothing() throws an exception of type fmt::SystemError.\n"
+      "Expected: do_nothing() throws an exception of type fmt::system_error.\n"
       "  Actual: it throws nothing.");
   EXPECT_NONFATAL_FAILURE(
       EXPECT_SYSTEM_ERROR(throw_system_error(), EDOM, "other"),
@@ -319,9 +299,9 @@ TEST(StreamingAssertionsTest, EXPECT_WRITE) {
 }
 
 TEST(UtilTest, FormatSystemError) {
-  fmt::MemoryWriter out;
+  fmt::memory_buffer out;
   fmt::format_system_error(out, EDOM, "test message");
-  EXPECT_EQ(out.str(), format_system_error(EDOM, "test message"));
+  EXPECT_EQ(to_string(out), format_system_error(EDOM, "test message"));
 }
 
 #if FMT_USE_FILE_DESCRIPTORS
